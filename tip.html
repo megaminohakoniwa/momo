@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>JPYC 投げ銭</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <style>
+    #stamp {
+      font-size: 40px;
+      display: none;
+      color: orange;
+      animation: pop 0.5s;
+    }
+    @keyframes pop {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <h2>JPYC 投げ銭</h2>
+
+  <button id="connect">MetaMask 接続</button>
+  <br><br>
+
+  <label>金額:</label>
+  <select id="amount">
+    <option value="100">100円</option>
+    <option value="500" selected>500円</option>
+    <option value="1000">1000円</option>
+  </select>
+  <button id="tip">送る</button>
+
+  <p id="status"></p>
+  <div id="stamp">🎉ありがとう！</div>
+
+<script>
+if (!window.ethereum && !location.href.includes("metamask")) {
+  const dappUrl = encodeURIComponent(window.location.href);
+  location.href = `https://metamask.app.link/dapp/${dappUrl}`;
+}
+
+
+  // URLパラメータから配信者アドレスを取得
+  const params = new URLSearchParams(window.location.search);
+  const TO_ADDRESS = params.get('to') || "0x自分のアドレス"; // デフォルトも設定可
+
+  const JPYC_ADDRESS = "0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29"; // Polygon JPYC
+  const JPYC_ABI = [
+    "function transfer(address to, uint256 amount) returns (bool)",
+    
+  ];
+
+  let signer;
+  let jpyc;
+
+  document.getElementById("connect").onclick = async () => {
+    if (!window.ethereum) {
+      alert("MetaMaskが必要です");
+      return;
+    }
+
+    await ethereum.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    jpyc = new ethers.Contract(JPYC_ADDRESS, JPYC_ABI, signer);
+
+    document.getElementById("status").innerText = "接続完了";
+  };
+
+  document.getElementById("tip").onclick = async () => {
+    try {
+      document.getElementById("status").innerText = "送金中…";
+
+      const value = ethers.utils.parseUnits(document.getElementById("amount").value,
+  18
+);
+
+
+      const tx = await jpyc.transfer(TO_ADDRESS, value);
+      await tx.wait();
+
+      document.getElementById("status").innerText = "送金完了！";
+      const stamp = document.getElementById("stamp");
+      stamp.style.display = "block";
+      setTimeout(() => { stamp.style.display = "none"; }, 1500);
+
+    } catch (e) {
+  console.error(e);
+  document.getElementById("status").innerText =
+    e?.data?.message || e?.message || "送金失敗";
+}
+
+  };
+</script>
+</body>
+</html>

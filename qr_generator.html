@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>JPYC 投げ銭 QR生成</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body>
+  <h2>配信者用 JPYC QRコード生成</h2>
+
+  <label>ウォレットアドレス:</label>
+  <input type="text" id="wallet" placeholder="0x...">
+  <button id="generate">QRコード作成</button>
+
+  <div id="qrcode" style="margin-top:20px;"></div>
+
+  <script>
+    const generateBtn = document.getElementById('generate');
+    const walletInput = document.getElementById('wallet');
+    const qrDiv = document.getElementById('qrcode');
+    
+    generateBtn.onclick = () => {
+      const address = walletInput.value.trim();
+      if (!address.startsWith("0x") || address.length !== 42) {
+        alert("正しいウォレットアドレスを入力してください");
+        return;
+      }
+
+      // QRコード用URL（投げ銭ページ + アドレスをパラメータに）
+      const url = `http://192.168.0.28:5500//tip.html?to=${address}`;
+
+      qrDiv.innerHTML = ""; // 前のQR削除
+      QRCode.toCanvas(url, { width: 200 }, function (error, canvas) {
+        if (error) console.error(error);
+        qrDiv.appendChild(canvas);
+      });
+    };
+  </script>
+</body>
+</html>
