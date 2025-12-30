@@ -35,9 +35,11 @@
   <div id="stamp">🎉ありがとう！</div>
 
 <script>
-if (!window.ethereum && !location.href.includes("metamask")) {
-  const dappUrl = encodeURIComponent(window.location.href);
-  location.href = `https://metamask.app.link/dapp/${dappUrl}`;
+if (!window.ethereum && !navigator.userAgent.includes("MetaMask")) {
+    // 現在のページのURLから https:// を除いた部分を取得
+    const targetUrl = window.location.href.replace(/^https?:\/\//, '');
+    // 直接的なリンク形式に修正
+    location.href = `https://metamask.app.link/dapp/${targetUrl}`;
 }
 
 
@@ -95,3 +97,4 @@ if (!window.ethereum && !location.href.includes("metamask")) {
 </script>
 </body>
 </html>
+
