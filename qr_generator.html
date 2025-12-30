@@ -27,7 +27,7 @@
       }
 
       // QRコード用URL（投げ銭ページ + アドレスをパラメータに）
-      const url = `http://192.168.0.28:5500//tip.html?to=${address}`;
+      const url = `https://metamask.app.link/dapp/megaminohakoniwa.github.io/momo/tip.html?to=${address}`;
 
       qrDiv.innerHTML = ""; // 前のQR削除
       QRCode.toCanvas(url, { width: 200 }, function (error, canvas) {
@@ -38,3 +38,4 @@
   </script>
 </body>
 </html>
+
